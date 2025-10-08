@@ -1,5 +1,12 @@
 trigger:
-- main
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - itabank.Core/*
+    - itabank.WebApi/*
+    - itabank.WebApi.Tests/*
 
 pool:
   vmImage: ubuntu-latest
