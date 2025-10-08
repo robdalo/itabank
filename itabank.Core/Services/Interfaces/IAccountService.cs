@@ -6,4 +6,5 @@ public interface IAccountService
 {
     Account AddOrUpdate(Account account);
     Account Get(int id);
+    Account GetByNumber(string number);
 }

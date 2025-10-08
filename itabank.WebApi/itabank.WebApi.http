@@ -1,0 +1,6 @@
+@itabank.WebApi_HostAddress = http://localhost:5263
+
+GET {{itabank.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
