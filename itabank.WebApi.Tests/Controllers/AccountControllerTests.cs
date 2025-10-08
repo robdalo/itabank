@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using AutoMapper;
 using FluentAssertions;
 using itabank.Core.Services.Interfaces;
 using itabank.WebApi.Controllers;
@@ -14,6 +15,7 @@ public class AccountControllerTests
     private AccountController _controller;
 
     private Mock<IAccountService> _accountService;
+    private Mock<IMapper> _mapper;
     private Mock<ITransactionService> _transactionService;
 
     [SetUp]
@@ -23,9 +25,13 @@ public class AccountControllerTests
         _autoFixture.Customize(new AutoMoqCustomization());
 
         _accountService = _autoFixture.Freeze<Mock<IAccountService>>();
+        _mapper = _autoFixture.Freeze<Mock<IMapper>>();
         _transactionService = _autoFixture.Freeze<Mock<ITransactionService>>();
 
-        _controller = new AccountController(_accountService.Object, _transactionService.Object);
+        _controller = new AccountController(
+            accountService: _accountService.Object,
+            mapper: _mapper.Object,
+            transactionService: _transactionService.Object);
     }
 
     [Test]

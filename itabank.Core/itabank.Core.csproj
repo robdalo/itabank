@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\itabank.SDK\itabank.SDK.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using itapoker.Core.Extensions;
+using itabank.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

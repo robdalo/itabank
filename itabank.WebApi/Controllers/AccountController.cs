@@ -1,6 +1,7 @@
-using itabank.Core.Domain.Models;
+using itabank.SDK.Models;
 using itabank.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace itabank.WebApi.Controllers;
 
@@ -9,13 +10,16 @@ namespace itabank.WebApi.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
+    private readonly IMapper _mapper;
     private readonly ITransactionService _transactionService;
 
     public AccountController(
         IAccountService accountService,
+        IMapper mapper,
         ITransactionService transactionService)
     {
         _accountService = accountService;
+        _mapper = mapper;
         _transactionService = transactionService;
     }
 
@@ -23,6 +27,6 @@ public class AccountController : ControllerBase
     [Route("{accountNumber}")]
     public Account GetByNumber(string accountNumber)
     {
-        return _accountService.GetByNumber(accountNumber);
+        return _mapper.Map<Account>(_accountService.GetByNumber(accountNumber));
     }
 }

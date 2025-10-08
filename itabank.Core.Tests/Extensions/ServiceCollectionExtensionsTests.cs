@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+﻿using AutoMapper;
+using FluentAssertions;
 using itabank.Core.Repositories.Interfaces;
 using itabank.Core.Services.Interfaces;
-using itapoker.Core.Extensions;
+using itabank.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace itabank.Core.Extensions.Tests;
@@ -19,6 +20,7 @@ public class ServiceCollectionExtensionsTests
 
         provider.GetRequiredService<IAccountRepo>().Should().NotBeNull();
         provider.GetRequiredService<IAccountService>().Should().NotBeNull();
+        provider.GetRequiredService<IMapper>().Should().NotBeNull();
         provider.GetRequiredService<ITransactionService>().Should().NotBeNull();
     }
 }
