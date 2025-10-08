@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: 'itabank.WebApi/itabank.WebApi.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test - itabank.Core'
+  inputs:
+    command: 'test'
+    projects: 'itabank.Core.Tests/itabank.Core.Tests.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test - itabank.WebApi'
+  inputs:
+    command: 'test'
+    projects: 'itabank.WebApi.Tests/itabank.WebApi.Tests.csproj'
