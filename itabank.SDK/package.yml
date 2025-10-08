@@ -17,7 +17,7 @@ steps:
     command: 'pack'
     packagesToPack: 'itabank.SDK/itabank.SDK.csproj'
     nobuild: false
-    versioningScheme: 'byBuildNumber'
+    versioningScheme: 'byPrereleaseNumber'
     majorVersion: '1'
     minorVersion: '0'
     patchVersion: '0'
