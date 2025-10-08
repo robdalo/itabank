@@ -15,26 +15,16 @@ public class AccountService : IAccountService
 
     public Account AddOrUpdate(Account account)
     {
-        if (account.Id < 1)
-            CreateAccountNumber(account);
-            
         return _accountRepo.AddOrUpdate(account);
     }
 
-    public Account Get(int accountId)
+    public Account Get(int id)
     {
-        return _accountRepo.Get(accountId);
+        return _accountRepo.Get(id);
     }
-
-    internal void CreateAccountNumber(Account account)
+    
+    public Account GetByNumber(string number)
     {
-        account.Id = GetAccountId(account);
-        account.Number = $"{account.Id:D6}";
-    }
-
-    private int GetAccountId(Account account)
-    {
-        return account.Transactions.Any() ?
-            account.Transactions.Max(x => x.Id) + 1 : 1;
+        return _accountRepo.GetByNumber(number);
     }
 }

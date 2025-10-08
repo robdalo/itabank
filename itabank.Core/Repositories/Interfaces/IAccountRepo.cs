@@ -6,6 +6,7 @@ public interface IAccountRepo
 {
     Account AddOrUpdate(Account account);
     List<Account> Get();
-    Account Get(int accountId);
+    Account Get(int id);
+    Account GetByNumber(string number);
     void Truncate();
 }

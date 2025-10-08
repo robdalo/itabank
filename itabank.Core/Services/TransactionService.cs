@@ -14,19 +14,23 @@ public class TransactionService : ITransactionService
         _accountRepo = accountRepo;
     }
 
-    public void Post(int debitAccountId, int creditAccountId, decimal value)
+    public void Post(
+        string accountNumberDebit,
+        string accountNumberCredit,
+        decimal value)
     {
         var timestamp = DateTime.UtcNow;
 
         // debit account
 
-        var debitAccount = _accountRepo.Get(debitAccountId);
+        var debitAccount = _accountRepo.GetByNumber(accountNumberDebit);
+        var creditAccount = _accountRepo.GetByNumber(accountNumberCredit);
 
         debitAccount.Transactions.Add(new()
         {
             Id = GetTransactionId(debitAccount),
             Timestamp = timestamp,
-            AccountId = creditAccountId,
+            AccountId = creditAccount.Id,
             Type = TransactionType.Debit,
             Value = value
         });
@@ -35,13 +39,11 @@ public class TransactionService : ITransactionService
 
         // credit account
 
-        var creditAccount = _accountRepo.Get(creditAccountId);
-
         creditAccount.Transactions.Add(new()
         {
             Id = GetTransactionId(creditAccount),
             Timestamp = timestamp,
-            AccountId = debitAccountId,
+            AccountId = debitAccount.Id,
             Type = TransactionType.Credit,
             Value = value
         });

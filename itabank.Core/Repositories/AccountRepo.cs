@@ -17,10 +17,16 @@ public class AccountRepo : IAccountRepo
         var existing = collection.FindOne(x => x.Number == account.Number);
 
         if (existing == null)
-            existing = new Account();
+        {
+            var accountId = GetAccountId(collection);
+
+            existing = new Account {
+                Id = accountId,
+                Number = GetAccountNumber(accountId)
+            };
+        }
 
         existing.Name = account.Name;
-        existing.Number = account.Number;
         existing.Balance = account.Balance;
         existing.Transactions = account.Transactions;
 
@@ -60,8 +66,17 @@ public class AccountRepo : IAccountRepo
     {
         using var context = new LiteDatabase(DatabaseName);
 
-        var collection = context.GetCollection<Account>();
+        context.DropCollection("Account");
+    }
 
-        collection.DeleteAll();
+    private int GetAccountId(ILiteCollection<Account> collection)
+    {
+        return collection.Count() > 0 ?
+            collection.Max(x => x.Id) + 1 : 1;
+    }
+    
+    private string GetAccountNumber(int id)
+    {
+        return $"{id:D6}";
     }
 }
