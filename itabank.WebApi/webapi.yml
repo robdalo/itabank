@@ -29,3 +29,9 @@ steps:
   inputs:
     command: 'test'
     projects: 'itabank.WebApi.Tests/itabank.WebApi.Tests.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
