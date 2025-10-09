@@ -18,13 +18,23 @@ public class AccountService : IAccountService
         return _accountRepo.AddOrUpdate(account);
     }
 
+    public List<Account> Get()
+    {
+        return _accountRepo.Get();
+    }
+
     public Account Get(int id)
     {
         return _accountRepo.Get(id);
     }
-    
-    public Account GetByNumber(string number)
+
+    public Account Get(string number)
     {
         return _accountRepo.GetByNumber(number);
+    }
+
+    public void Truncate()
+    {
+        _accountRepo.Truncate();
     }
 }

@@ -1,7 +1,10 @@
-using itabank.SDK.Models;
-using itabank.Core.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using itabank.Core.Services.Interfaces;
+using itabank.SDK.Requests;
+using Microsoft.AspNetCore.Mvc;
+
+using Domain = itabank.Core.Domain;
+using SDK = itabank.SDK;
 
 namespace itabank.WebApi.Controllers;
 
@@ -23,10 +26,53 @@ public class AccountController : ControllerBase
         _transactionService = transactionService;
     }
 
-    [HttpGet]
-    [Route("{accountNumber}")]
-    public Account GetByNumber(string accountNumber)
+    [HttpPost]
+    [Route("")]
+    public SDK.Models.Account AddOrUpdate(SDK.Requests.AccountRequest request)
     {
-        return _mapper.Map<Account>(_accountService.GetByNumber(accountNumber));
+        var account = _accountService.AddOrUpdate(new() {
+            Number = request.Number,
+            Name = request.Name
+        });
+
+        return _mapper.Map<SDK.Models.Account>(account);
+    }
+
+    [HttpGet]
+    [Route("")]
+    public List<SDK.Models.Account> Get()
+    {
+        return _mapper.Map<List<SDK.Models.Account>>(_accountService.Get());
+    }
+
+    [HttpGet]
+    [Route("id/{accountId}")]
+    public List<SDK.Models.Account> Get(int accountId)
+    {
+        return _mapper.Map<List<SDK.Models.Account>>(_accountService.Get(accountId));
+    }
+
+    [HttpGet]
+    [Route("number/{accountNumber}")]
+    public SDK.Models.Account Get(string accountNumber)
+    {
+        return _mapper.Map<SDK.Models.Account>(_accountService.Get(accountNumber));
+    }
+
+    [HttpPost]
+    [Route("transaction/post")]
+    public void Post(TransactionRequest request)
+    {
+        _transactionService.Post(
+            accountNumberDebit: request.PayerAccountNumber,
+            accountNumberCredit: request.PayeeAccountNumber,
+            value: request.Value);
+    }
+
+    [HttpPut]
+    [Route("truncate")]
+    public void Truncate()
+    {
+        _accountService.Truncate();
     }
 }

@@ -37,10 +37,10 @@ public class AccountControllerTests
     [Test]
     public void GetByNumber()
     {
-        _controller.Invoking(x => x.GetByNumber("000001"))
+        _controller.Invoking(x => x.Get("000001"))
                    .Should()
                    .NotThrow();
 
-        _accountService.Verify(x => x.GetByNumber(It.IsAny<string>()), Times.Once);
+        _accountService.Verify(x => x.Get(It.IsAny<string>()), Times.Once);
     }
 }

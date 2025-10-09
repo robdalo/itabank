@@ -48,7 +48,7 @@ public class AccountServiceTests
     [Test]
     public void GetByNumber()
     {
-        _accountService.GetByNumber("000001");
+        _accountService.Get("000001");
         _accountRepo.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
     }  
 }

@@ -5,6 +5,8 @@ namespace itabank.Core.Services.Interfaces;
 public interface IAccountService
 {
     Account AddOrUpdate(Account account);
+    List<Account> Get();
     Account Get(int id);
-    Account GetByNumber(string number);
+    Account Get(string number);
+    void Truncate();
 }

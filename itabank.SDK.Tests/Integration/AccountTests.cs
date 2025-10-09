@@ -21,12 +21,34 @@ public class AccountTests
         _apiConsumer = provider.GetRequiredService<IApiConsumer>();
     }
 
+    [SetUp]
+    public void Setup()
+    {
+        _apiConsumer.TruncateAsync();
+    }
+
     [Test]
-    public async Task GetAccountByNumber()
+    public async Task AddOrUpdateAsync()
+    {
+        var number = "000001";
+        var name = "Mr Ted Crilly";
+        var balance = (decimal)(0);
+
+        var account = await _apiConsumer.AddOrUpdateAccountAsync(new() {
+            Name = name
+        });
+
+        account.Number.Should().Be(number);
+        account.Name.Should().Be(name);
+        account.Balance.Should().Be(balance);
+    }
+
+    [Test]
+    public async Task GetAccountByNumberAsync()
     {
         var accountNumber = "000001";
 
-        var account = await _apiConsumer.GetAccountByNumberAsync(accountNumber);
+        var account = await _apiConsumer.GetAccountAsync(accountNumber);
 
         account.Should().NotBeNull();
     }
