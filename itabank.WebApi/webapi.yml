@@ -9,6 +9,8 @@ trigger:
     - itabank.WebApi.Tests/*
 
 variables:
+  azureSubscription: 'itabank-service-connection'
+  appServiceName: 'itabank-dev-webapi'
   buildConfiguration: 'Release'
 
 stages:
@@ -48,3 +50,33 @@ stages:
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: 'webapi-drop'
+
+- stage: Deploy
+  displayName: 'Deploy'
+  dependsOn: Build
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - deployment: DeployToAzure
+    displayName: 'Deploy'
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'webapi-drop'
+              downloadPath: '$(System.ArtifactsDirectory)'
+          - task: AzureWebApp@1
+            displayName: 'Deploy'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'webApp'
+              appName: '$(appServiceName)'
+              package: '$(System.ArtifactsDirectory)/webapi-drop/**/*.zip'
+              deploymentMethod: 'auto'
