@@ -1,0 +1,21 @@
+﻿using Newtonsoft.Json;
+
+namespace itabank.Shared;
+
+public static class Serializer
+{
+    public static T Clone<T>(T obj)
+    {
+        return Deserialize<T>(Serialize(obj));
+    }
+
+    public static T Deserialize<T>(string value)
+    {
+        return JsonConvert.DeserializeObject<T>(value);
+    }
+
+    public static string Serialize(object obj)
+    {
+        return JsonConvert.SerializeObject(obj);
+    }
+}
