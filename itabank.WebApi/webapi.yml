@@ -9,7 +9,7 @@ trigger:
     - itabank.WebApi.Tests/*
 
 variables:
-  azureSubscription: 'itabank-subscription'
+  azureSubscription: 'itabank-service-connection'
   appServiceName: 'itabank-dev-webapi'
   buildConfiguration: 'Release'
 
@@ -60,7 +60,7 @@ stages:
   jobs:
   - deployment: DeployToAzure
     displayName: 'Deploy itabank.WebApi'
-    environment: 'dev'  # You can create different environments (dev, staging, production)
+    environment: 'dev'
     strategy:
       runOnce:
         deploy:
