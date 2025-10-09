@@ -59,21 +59,21 @@ stages:
     vmImage: ubuntu-latest
   jobs:
   - deployment: DeployToAzure
-    displayName: 'Deploy itabank.WebApi'
+    displayName: 'Deploy'
     environment: 'dev'
     strategy:
       runOnce:
         deploy:
           steps:
           - task: DownloadBuildArtifacts@1
-            displayName: 'Download Artifacts'
+            displayName: 'Download'
             inputs:
               buildType: 'current'
               downloadType: 'single'
               artifactName: 'webapi-drop'
               downloadPath: '$(System.ArtifactsDirectory)'
           - task: AzureWebApp@1
-            displayName: 'Deploy to Azure'
+            displayName: 'Deploy'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: 'webApp'
