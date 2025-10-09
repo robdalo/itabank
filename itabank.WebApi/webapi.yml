@@ -8,30 +8,43 @@ trigger:
     - itabank.WebApi/*
     - itabank.WebApi.Tests/*
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  buildConfiguration: 'Release'
 
-steps:
-- task: DotNetCoreCLI@2
-  displayName: 'Build'
-  inputs:
-    command: 'build'
-    projects: 'itabank.WebApi/itabank.WebApi.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Test - itabank.Core'
-  inputs:
-    command: 'test'
-    projects: 'itabank.Core.Tests/itabank.Core.Tests.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Test - itabank.WebApi'
-  inputs:
-    command: 'test'
-    projects: 'itabank.WebApi.Tests/itabank.WebApi.Tests.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: true
+stages:
+- stage: Build
+  displayName: 'Build & Test'
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: BuildAndTest
+    displayName: 'Build & Test'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: 'itabank.WebApi/itabank.WebApi.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Test - itabank.Core'
+      inputs:
+        command: 'test'
+        projects: 'itabank.Core.Tests/itabank.Core.Tests.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'Test - itabank.WebApi'
+      inputs:
+        command: 'test'
+        projects: 'itabank.WebApi.Tests/itabank.WebApi.Tests.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: 'publish'
+        projects: 'itabank.WebApi/itabank.WebApi.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        publishWebProjects: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'webapi-drop'
