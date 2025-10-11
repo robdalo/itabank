@@ -80,5 +80,5 @@ stages:
               azureSubscription: '$(azureSubscription)'
               appType: 'webApp'
               appName: '$(appServiceName)'
-              package: '$(System.ArtifactsDirectory)/webapi-drop/**/*.zip'
+              package: '$(System.ArtifactsDirectory)/webapi/**/*.zip'
               deploymentMethod: 'auto'
