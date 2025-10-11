@@ -4,6 +4,8 @@ using AutoMapper;
 using FluentAssertions;
 using itabank.Core.Services.Interfaces;
 using itabank.WebApi.Controllers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace itabank.WebApi.Tests;
@@ -30,6 +32,7 @@ public class AccountControllerTests
 
         _controller = new AccountController(
             accountService: _accountService.Object,
+            logger: NullLoggerFactory.Instance.CreateLogger<AccountController>(),
             mapper: _mapper.Object,
             transactionService: _transactionService.Object);
     }

@@ -50,7 +50,8 @@ public class AccountTests
         var name = "Mr Ted Crilly";
         var balance = (decimal)(0);
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new() {
+        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        {
             Name = name
         });
 
@@ -59,6 +60,67 @@ public class AccountTests
         account.Number.Should().Be(number);
         account.Name.Should().Be(name);
         account.Balance.Should().Be(balance);
+    }
+    
+    [Test]
+    public async Task PostTransaction()
+    {
+        var payerAccount = new
+        {
+            Number = "000001",
+            Name = "Mr Ted Crilly",
+            Balance = (decimal)(125)
+        };
+
+        var payeeAccount = new
+        {
+            Number = "000002",
+            Name = "Mr Fred Olsen",
+            Balance = (decimal)(0)            
+        };
+
+        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        {
+            Name = payerAccount.Name,
+            Balance = payerAccount.Balance
+        });
+        
+        await _apiConsumer.AddOrUpdateAccountAsync(new() 
+        {
+            Name = payeeAccount.Name,
+            Balance = payeeAccount.Balance
+        });
+
+        var account = await _apiConsumer.GetAccountAsync(payerAccount.Number);
+
+        account.Number.Should().Be(payerAccount.Number);
+        account.Name.Should().Be(payerAccount.Name);
+        account.Balance.Should().Be(payerAccount.Balance);
+
+        account = await _apiConsumer.GetAccountAsync(payeeAccount.Number);
+
+        account.Number.Should().Be(payeeAccount.Number);
+        account.Name.Should().Be(payeeAccount.Name);
+        account.Balance.Should().Be(payeeAccount.Balance);
+
+        await _apiConsumer.PostTransactionAsync(new()
+        {
+            PayerAccountNumber = payerAccount.Number,
+            PayeeAccountNumber = payeeAccount.Number,
+            Value = 50
+        });
+
+        account = await _apiConsumer.GetAccountAsync(payerAccount.Number);
+
+        account.Number.Should().Be(payerAccount.Number);
+        account.Name.Should().Be(payerAccount.Name);
+        account.Balance.Should().Be(75);
+
+        account = await _apiConsumer.GetAccountAsync(payeeAccount.Number);
+
+        account.Number.Should().Be(payeeAccount.Number);
+        account.Name.Should().Be(payeeAccount.Name);
+        account.Balance.Should().Be(50);
     }
 
     private IServiceProvider GetServiceProvider()
