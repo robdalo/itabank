@@ -2,7 +2,6 @@
 using FluentAssertions;
 using itabank.Core.Repositories.Interfaces;
 using itabank.Core.Services.Interfaces;
-using itabank.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace itabank.Core.Extensions.Tests;

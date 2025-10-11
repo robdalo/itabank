@@ -1,7 +1,8 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
-using itabank.Core.Repositories;
+using itabank.Core.Settings;
+using Microsoft.Extensions.Options;
 
 namespace itabank.Core.Repositories.Tests;
 
@@ -11,11 +12,17 @@ public class AccountRepoTests
 
     private AccountRepo _accountRepo;
 
+    private const string DatabaseName = "itabank.db";
+
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         _autoFixture = new Fixture();
         _autoFixture.Customize(new AutoMoqCustomization());
+
+        _autoFixture.Inject(Options.Create<DatabaseSettings>(new() {
+            Name = DatabaseName
+        }));
 
         _accountRepo = _autoFixture.Create<AccountRepo>();
     }

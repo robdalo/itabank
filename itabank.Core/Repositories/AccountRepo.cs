@@ -1,16 +1,23 @@
 using itabank.Core.Domain.Models;
 using itabank.Core.Repositories.Interfaces;
+using itabank.Core.Settings;
 using LiteDB;
+using Microsoft.Extensions.Options;
 
 namespace itabank.Core.Repositories;
 
 public class AccountRepo : IAccountRepo
 {
-    private const string DatabaseName = "itabank.db";
+    private readonly DatabaseSettings _settings;
+
+    public AccountRepo(IOptions<DatabaseSettings> settings)
+    {
+        _settings = settings.Value;
+    }
 
     public Account AddOrUpdate(Account account)
     {
-        using var context = new LiteDatabase(DatabaseName);
+        using var context = new LiteDatabase(_settings.Name);
 
         var collection = context.GetCollection<Account>();
 
@@ -37,7 +44,7 @@ public class AccountRepo : IAccountRepo
 
     public Account Get(int id)
     {
-        using var context = new LiteDatabase(DatabaseName);
+        using var context = new LiteDatabase(_settings.Name);
 
         var collection = context.GetCollection<Account>();
 
@@ -46,7 +53,7 @@ public class AccountRepo : IAccountRepo
 
     public List<Account> Get()
     {
-        using var context = new LiteDatabase(DatabaseName);
+        using var context = new LiteDatabase(_settings.Name);
 
         var collection = context.GetCollection<Account>();
 
@@ -55,7 +62,7 @@ public class AccountRepo : IAccountRepo
 
     public Account GetByNumber(string number)
     {
-        using var context = new LiteDatabase(DatabaseName);
+        using var context = new LiteDatabase(_settings.Name);
 
         var collection = context.GetCollection<Account>();
 
@@ -64,7 +71,7 @@ public class AccountRepo : IAccountRepo
 
     public void Truncate()
     {
-        using var context = new LiteDatabase(DatabaseName);
+        using var context = new LiteDatabase(_settings.Name);
 
         context.DropCollection("Account");
     }

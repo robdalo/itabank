@@ -7,12 +7,12 @@ using NUnit.Framework.Internal;
 
 namespace itabank.SDK.Tests;
 
-[Ignore("Integration")]
+// [Ignore("Integration")]
 public class AccountTests
 {
     private IApiConsumer _apiConsumer;
 
-    private const string BaseUrl = "https://itabank-dev-webapi-g2f2bmbfbccudzbm.uksouth-01.azurewebsites.net";
+    private const string BaseUrl = "http://localhost:5263";
 
     [OneTimeSetUp]
     public void OneTimeSetup()
@@ -22,9 +22,9 @@ public class AccountTests
     }
 
     [SetUp]
-    public void Setup()
+    public async Task Setup()
     {
-        _apiConsumer.TruncateAsync();
+        await _apiConsumer.TruncateAsync();
     }
 
     [Test]
@@ -46,11 +46,19 @@ public class AccountTests
     [Test]
     public async Task GetAccountByNumberAsync()
     {
-        var accountNumber = "000001";
+        var number = "000001";
+        var name = "Mr Ted Crilly";
+        var balance = (decimal)(0);
 
-        var account = await _apiConsumer.GetAccountAsync(accountNumber);
+        await _apiConsumer.AddOrUpdateAccountAsync(new() {
+            Name = name
+        });
 
-        account.Should().NotBeNull();
+        var account = await _apiConsumer.GetAccountAsync(number);
+
+        account.Number.Should().Be(number);
+        account.Name.Should().Be(name);
+        account.Balance.Should().Be(balance);
     }
 
     private IServiceProvider GetServiceProvider()
