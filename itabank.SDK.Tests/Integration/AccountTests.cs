@@ -7,12 +7,12 @@ using NUnit.Framework.Internal;
 
 namespace itabank.SDK.Tests;
 
-// [Ignore("Integration")]
+[Ignore("Integration")]
 public class AccountTests
 {
     private IApiConsumer _apiConsumer;
 
-    private const string BaseUrl = "http://localhost:5263";
+    private const string BaseUrl = "https://itabank-dev-webapi-g2f2bmbfbccudzbm.uksouth-01.azurewebsites.net";
 
     [OneTimeSetUp]
     public void OneTimeSetup()
