@@ -5,3 +5,24 @@ trigger:
   paths:
     include:
     - itabank.WebApi/webapi.arm.*
+
+stages:
+- stage: Validation
+  displayName: 'Validation'
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Validation
+    displayName: 'Validation'
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'itabank-service-connection'
+        subscriptionId: '47e3a40f-35ad-4332-b501-a4036f561613'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'itabank-dev-services'
+        location: 'UK South'
+        templateLocation: 'Linked artifact'
+        csmFile: 'webapi.arm.json'
+        deploymentMode: 'Validation'
