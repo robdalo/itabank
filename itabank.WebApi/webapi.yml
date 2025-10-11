@@ -7,6 +7,8 @@ trigger:
     - itabank.Core/*
     - itabank.WebApi/*
     - itabank.WebApi.Tests/*
+    exclude:
+    - itabank.WebApi/webapi.arm.*
 
 variables:
   azureSubscription: 'itabank-service-connection'

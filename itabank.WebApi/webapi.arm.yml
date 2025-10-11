@@ -1,0 +1,7 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - itabank.WebApi/webapi.arm.*
