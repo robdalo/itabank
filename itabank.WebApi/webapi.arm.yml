@@ -16,6 +16,7 @@ stages:
     displayName: 'Validation'
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Validate ARM template'
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: 'itabank-service-connection'
@@ -24,5 +25,28 @@ stages:
         resourceGroupName: 'itabank-dev-services'
         location: 'UK South'
         templateLocation: 'Linked artifact'
-        csmFile: 'webapi.arm.json'
+        csmFile: '$(Build.SourcesDirectory)/itabank.WebApi/webapi.arm.json'
         deploymentMode: 'Validation'
+
+- stage: Deployment
+  displayName: 'Deployment'
+  dependsOn: Validation
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Deployment
+    displayName: 'Deployment'
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy ARM template'
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'itabank-service-connection'
+        subscriptionId: '47e3a40f-35ad-4332-b501-a4036f561613'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'itabank-dev-services'
+        location: 'UK South'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(Build.SourcesDirectory)/itabank.WebApi/webapi.arm.json'
+        deploymentMode: 'Incremental'

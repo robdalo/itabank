@@ -17,12 +17,12 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2024-11-01",
             "name": "[parameters('serverfarms_itabank_dev_webapi_plan_name')]",
-            "location": "Canada Central",
+            "location": "UK South",
             "sku": {
-                "name": "F1",
-                "tier": "Free",
-                "size": "F1",
-                "family": "F",
+                "name": "B1",
+                "tier": "Basic",
+                "size": "B1",
+                "family": "B",
                 "capacity": 1
             },
             "kind": "linux",
@@ -31,6 +31,7 @@
                 "elasticScaleEnabled": false,
                 "maximumElasticWorkerCount": 1,
                 "isSpot": false,
+                "freeOfferExpirationTime": "2025-11-08T13:46:37.69",
                 "reserved": true,
                 "isXenon": false,
                 "hyperV": false,
@@ -44,7 +45,7 @@
             "type": "Microsoft.Web/sites",
             "apiVersion": "2024-11-01",
             "name": "[parameters('sites_itabank_dev_webapi_name')]",
-            "location": "Canada Central",
+            "location": "UK South",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_itabank_dev_webapi_plan_name'))]"
             ],
@@ -53,12 +54,12 @@
                 "enabled": true,
                 "hostNameSslStates": [
                     {
-                        "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.canadacentral-01.azurewebsites.net')]",
+                        "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.uksouth-01.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Standard"
                     },
                     {
-                        "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.scm.canadacentral-01.azurewebsites.net')]",
+                        "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.scm.uksouth-01.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Repository"
                     }
@@ -82,7 +83,7 @@
                     "alwaysOn": false,
                     "http20Enabled": false,
                     "functionAppScaleLimit": 0,
-                    "minimumElasticInstanceCount": 0
+                    "minimumElasticInstanceCount": 1
                 },
                 "scmSiteAlsoStopped": false,
                 "clientAffinityEnabled": false,
@@ -91,7 +92,7 @@
                 "clientCertMode": "Required",
                 "hostNamesDisabled": false,
                 "ipMode": "IPv4",
-                "customDomainVerificationId": "85E5AEB7A3361FF31710D79F5559ED9080980D87ADBA1F3970AEEBFCFAFD9740",
+                "customDomainVerificationId": "1C02A91954D6FA160B10E578A634C2E9F2E5716BDFAD1614C3877FC0156C9835",
                 "containerSize": 0,
                 "dailyMemoryTimeQuota": 0,
                 "httpsOnly": true,
@@ -107,7 +108,7 @@
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2024-11-01",
             "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/ftp')]",
-            "location": "Canada Central",
+            "location": "UK South",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
             ],
@@ -119,7 +120,7 @@
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
             "apiVersion": "2024-11-01",
             "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/scm')]",
-            "location": "Canada Central",
+            "location": "UK South",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
             ],
@@ -131,7 +132,7 @@
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2024-11-01",
             "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/web')]",
-            "location": "Canada Central",
+            "location": "UK South",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
             ],
@@ -152,12 +153,13 @@
                 "linuxFxVersion": "DOTNETCORE|9.0",
                 "requestTracingEnabled": false,
                 "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2022",
                 "httpLoggingEnabled": false,
                 "acrUseManagedIdentityCreds": false,
                 "logsDirectorySizeLimit": 35,
                 "detailedErrorLoggingEnabled": false,
                 "publishingUsername": "REDACTED",
-                "scmType": "None",
+                "scmType": "VSTSRM",
                 "use32BitWorkerProcess": true,
                 "webSocketsEnabled": false,
                 "alwaysOn": false,
@@ -204,16 +206,130 @@
                 "preWarmedInstanceCount": 0,
                 "elasticWebAppScaleLimit": 0,
                 "functionsRuntimeScaleMonitoringEnabled": false,
-                "minimumElasticInstanceCount": 0,
+                "minimumElasticInstanceCount": 1,
                 "azureStorageAccounts": {},
                 "http20ProxyFlag": 0
             }
         },
         {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/1df11f52-6711-4fa2-9987-e517ac6d3872')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"cda2ff1876565c6a7d90c8042e5d99e0df6f4c6d\",\"buildId\":\"85\",\"buildNumber\":\"20251011.1\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"main\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-11T16:28:20.1412471Z",
+                "end_time": "2025-10-11T16:28:22.8697524Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/870d2dbb-86fa-4d95-bcbd-ebd5878fc75a')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"a48cfd59ae8e522ce9923522108de7e6b1fbe378\",\"buildId\":\"84\",\"buildNumber\":\"20251009.7\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"main\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-09T23:58:02.425831Z",
+                "end_time": "2025-10-09T23:58:05.875886Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/959b293e-6d97-4d9a-bdbd-abcfd2e271cf')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"ddf479b450a7f6764de407ae8753f9e2169124c5\",\"buildId\":\"87\",\"buildNumber\":\"20251011.2\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"main\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-11T17:06:51.1146325Z",
+                "end_time": "2025-10-11T17:06:53.0725058Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/bd955961-e5be-445d-b1c1-41aa8995e78a')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"858640169e595f738d1af63d089f947d3ec4a3e9\",\"buildId\":\"81\",\"buildNumber\":\"20251009.6\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"main\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-09T17:27:02.9706107Z",
+                "end_time": "2025-10-09T17:27:05.2350904Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/fb43af70-cd19-4548-ae57-37b2d7f051f4')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"978829f7dbabaf86b4b909a73c707513c05b0d35\",\"buildId\":\"80\",\"buildNumber\":\"20251009.5\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"robd\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-09T14:09:08.5740782Z",
+                "end_time": "2025-10-09T14:09:22.0576048Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/fca066a8-182f-4f9d-a336-9a0beb282cfe')]",
+            "location": "UK South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"deployment\",\"commitId\":\"cb9c8dd7ef887559565d0cecbce03a9cee312cfc\",\"buildId\":\"88\",\"buildNumber\":\"20251011.3\",\"repoProvider\":\"GitHub\",\"repoName\":\"robdalo/itabank\",\"collectionUrl\":\"https://dev.azure.com/robd0995/\",\"teamProject\":\"286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"buildProjectUrl\":\"https://dev.azure.com/robd0995/286ad473-3155-4c2d-a692-00bc7c74bdbb\",\"repositoryUrl\":\"https://github.com/robdalo/itabank\",\"branch\":\"main\",\"teamProjectName\":\"itabank\",\"slotName\":\"production\"}",
+                "start_time": "2025-10-11T17:20:08.1926229Z",
+                "end_time": "2025-10-11T17:20:10.15723Z",
+                "active": true
+            }
+        },
+        {
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2024-11-01",
-            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/', parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.canadacentral-01.azurewebsites.net')]",
-            "location": "Canada Central",
+            "name": "[concat(parameters('sites_itabank_dev_webapi_name'), '/', parameters('sites_itabank_dev_webapi_name'), '-g2f2bmbfbccudzbm.uksouth-01.azurewebsites.net')]",
+            "location": "UK South",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_webapi_name'))]"
             ],

@@ -51,7 +51,7 @@ stages:
       displayName: 'Publish Artifacts'
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'webapi-drop'
+        artifactName: 'webapi'
 
 - stage: Deploy
   displayName: 'Deploy'
