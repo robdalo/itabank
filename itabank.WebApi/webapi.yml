@@ -72,7 +72,7 @@ stages:
             inputs:
               buildType: 'current'
               downloadType: 'single'
-              artifactName: 'webapi-drop'
+              artifactName: 'webapi'
               downloadPath: '$(System.ArtifactsDirectory)'
           - task: AzureWebApp@1
             displayName: 'Deploy'
