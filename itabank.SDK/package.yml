@@ -5,6 +5,8 @@ trigger:
   paths:
     include:
     - itabank.SDK/*
+    - itabank.SDK.Tests/*
+    - itabank.Shared/*
 
 pool:
   vmImage: ubuntu-latest
