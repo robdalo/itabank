@@ -56,11 +56,11 @@ public class AccountController : ControllerBase
 
     [HttpGet]
     [Route("id/{accountId}")]
-    public List<SDK.Models.Account> Get(int accountId)
+    public SDK.Models.Account Get(int accountId)
     {
         _logger.LogInformation($"Get account - accountId: {accountId}");
 
-        return _mapper.Map<List<SDK.Models.Account>>(_accountService.Get(accountId));
+        return _mapper.Map<SDK.Models.Account>(_accountService.Get(accountId));
     }
 
     [HttpGet]
