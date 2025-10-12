@@ -17,18 +17,6 @@ public class RestConsumer
         _client = new HttpClient();
     }
 
-    private void ConfigureHeaders(string authToken = "")
-    {
-        if (!_client.DefaultRequestHeaders.Accept.Any(a => a.MediaType == ContentType))
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
-
-        if (!string.IsNullOrEmpty(authToken))
-        {
-            if (_client.DefaultRequestHeaders.Authorization.Scheme != "bearer")
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", authToken);
-        }
-    }
-
     public async Task<T> GetAsync<T>(string endpoint, string authToken)
     {
         ConfigureHeaders(authToken);
@@ -37,14 +25,6 @@ public class RestConsumer
         var content = await response.Content.ReadAsStringAsync();
 
         return Serializer.Deserialize<T>(content);
-    }
-
-    private StringContent GetStringContent(object payload)
-    {
-        if (payload == null)
-            return null;
-
-        return new StringContent(Serializer.Serialize(payload), Encoding.UTF8, ContentType);
     }
 
     public async Task<T> PostAsync<T>(string endpoint, string authToken, object payload)
@@ -83,4 +63,24 @@ public class RestConsumer
 
         return Serializer.Deserialize<T>(serialized);
     }
+
+    private void ConfigureHeaders(string authToken = "")
+    {
+        if (!_client.DefaultRequestHeaders.Accept.Any(a => a.MediaType == ContentType))
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
+
+        if (!string.IsNullOrEmpty(authToken))
+        {
+            if (_client.DefaultRequestHeaders.Authorization.Scheme != "bearer")
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", authToken);
+        }
+    }    
+
+    private StringContent GetStringContent(object payload)
+    {
+        if (payload == null)
+            return null;
+
+        return new StringContent(Serializer.Serialize(payload), Encoding.UTF8, ContentType);
+    }    
 }

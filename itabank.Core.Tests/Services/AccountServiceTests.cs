@@ -30,16 +30,24 @@ public class AccountServiceTests
     {
         // add
 
-        _accountService.AddOrUpdate(new() {
+        _accountService.AddOrUpdate(new()
+        {
             Name = "Mr Ted Crilly",
             Balance = 25
         });
 
         _accountRepo.Verify(x => x.AddOrUpdate(It.IsAny<Account>()), Times.Once);
     }
-
+    
     [Test]
     public void Get()
+    {
+        _accountService.Get();
+        _accountRepo.Verify(x => x.Get(), Times.Once);
+    }    
+
+    [Test]
+    public void GetById()
     {
         _accountService.Get(1);
         _accountRepo.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
@@ -50,5 +58,12 @@ public class AccountServiceTests
     {
         _accountService.Get("000001");
         _accountRepo.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
-    }  
+    }
+
+    [Test]
+    public void Truncate()
+    {
+        _accountService.Truncate();
+        _accountRepo.Verify(x => x.Truncate(), Times.Once);
+    }    
 }

@@ -30,7 +30,7 @@ public class AccountService : IAccountService
 
     public Account Get(string number)
     {
-        return _accountRepo.GetByNumber(number);
+        return _accountRepo.Get(number);
     }
 
     public void Truncate()

@@ -14,49 +14,46 @@ public class TransactionService : ITransactionService
         _accountRepo = accountRepo;
     }
 
-    public void Post(
-        string accountNumberDebit,
-        string accountNumberCredit,
-        decimal value)
+    public void Post(string payer, string payee, decimal value)
     {
         var timestamp = DateTime.UtcNow;
 
         // debit account
 
-        var debitAccount = _accountRepo.GetByNumber(accountNumberDebit);
-        var creditAccount = _accountRepo.GetByNumber(accountNumberCredit);
+        var payerAccount = _accountRepo.Get(payer);
+        var payeeAccount = _accountRepo.Get(payee);
 
-        debitAccount.Transactions.Add(new()
+        payerAccount.Transactions.Add(new()
         {
-            Id = GetTransactionId(debitAccount),
+            Id = GetTransactionId(payerAccount),
             Timestamp = timestamp,
-            AccountId = creditAccount.Id,
+            AccountId = payeeAccount.Id,
             Type = TransactionType.Debit,
             Value = value
         });
 
-        debitAccount.Balance -= value;
+        payerAccount.Balance -= value;
 
         // credit account
 
-        creditAccount.Transactions.Add(new()
+        payeeAccount.Transactions.Add(new()
         {
-            Id = GetTransactionId(creditAccount),
+            Id = GetTransactionId(payeeAccount),
             Timestamp = timestamp,
-            AccountId = debitAccount.Id,
+            AccountId = payerAccount.Id,
             Type = TransactionType.Credit,
             Value = value
         });
 
-        creditAccount.Balance += value;
+        payeeAccount.Balance += value;
 
         // write to database
 
-        _accountRepo.AddOrUpdate(debitAccount);
-        _accountRepo.AddOrUpdate(creditAccount);
+        _accountRepo.AddOrUpdate(payerAccount);
+        _accountRepo.AddOrUpdate(payeeAccount);
     }
 
-    internal int GetTransactionId(Account account)
+    private int GetTransactionId(Account account)
     {
         return account.Transactions.Any() ?
             account.Transactions.Max(x => x.Id) + 1 : 1;

@@ -3,7 +3,6 @@ using itabank.SDK.Models;
 using itabank.SDK.Requests;
 using itabank.SDK.Settings;
 using itabank.Shared;
-using itabank.Shared.Config;
 using Microsoft.Extensions.Options;
 
 namespace itabank.SDK.Consumers;
@@ -24,7 +23,7 @@ public class ApiConsumer : IApiConsumer
     public async Task<Account> AddOrUpdateAccountAsync(AccountRequest request)
     {
         return await _restConsumer.PostAsync<Account>(
-            endpoint: ApiEndpoints.AddOrUpdateAccount,
+            endpoint: ApiSettings.Endpoints["AddOrUpdateAccount"],
             authToken: AuthToken,
             payload: request);
     }
@@ -32,28 +31,28 @@ public class ApiConsumer : IApiConsumer
     public async Task<List<Account>> GetAccountsAsync()
     {
         return await _restConsumer.GetAsync<List<Account>>(
-            endpoint: ApiEndpoints.GetAccounts,
+            endpoint: ApiSettings.Endpoints["GetAccounts"],
             authToken: AuthToken);
     }
 
     public async Task<Account> GetAccountAsync(int accountId)
     {
         return await _restConsumer.GetAsync<Account>(
-            endpoint: ApiEndpoints.GetAccountById.Replace("{accountId}", accountId.ToString()),
+            endpoint: ApiSettings.Endpoints["GetAccountById"].Replace("{accountId}", accountId.ToString()),
             authToken: AuthToken);
     }
 
     public async Task<Account> GetAccountAsync(string accountNumber)
     {
         return await _restConsumer.GetAsync<Account>(
-            endpoint: ApiEndpoints.GetAccountByNumber.Replace("{accountNumber}", accountNumber),
+            endpoint: ApiSettings.Endpoints["GetAccountByNumber"].Replace("{accountNumber}", accountNumber),
             authToken: AuthToken);
     }
 
     public async Task PostTransactionAsync(TransactionRequest request)
     {
         await _restConsumer.PostAsync<Account>(
-            endpoint: ApiEndpoints.PostTransaction,
+            endpoint: ApiSettings.Endpoints["PostTransaction"],
             authToken: AuthToken,
             payload: request);
     }
@@ -61,7 +60,7 @@ public class ApiConsumer : IApiConsumer
     public async Task TruncateAsync()
     {
         await _restConsumer.PutAsync(
-            endpoint: ApiEndpoints.TruncateAccounts,
+            endpoint: ApiSettings.Endpoints["TruncateAccounts"],
             authToken: AuthToken);
     }
 }

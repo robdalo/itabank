@@ -9,28 +9,50 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: DotNetCoreCLI@2
-  displayName: 'Build'
-  inputs:
-    command: 'build'
-    projects: 'itabank.SDK/itabank.SDK.csproj'
+stages:
+- stage: Build
+  displayName: 'Build & Test'
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: BuildAndTest
+    displayName: 'Build & Test'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: 'itabank.SDK/itabank.SDK.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'Test'
+      inputs:
+        command: 'test'
+        projects: 'itabank.SDK.Tests/itabank.SDK.Tests.csproj'
 
-- task: DotNetCoreCLI@2
+- stage: Package
   displayName: 'Package'
-  inputs:
-    command: 'pack'
-    packagesToPack: 'itabank.SDK/itabank.SDK.csproj'
-    nobuild: false
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '1'
-    minorVersion: '0'
-    patchVersion: '0'
-    
-- task: DotNetCoreCLI@2
-  displayName: 'Push'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: '286ad473-3155-4c2d-a692-00bc7c74bdbb/d45a0b00-2205-43e8-a33e-1acfec305dc1'
+  dependsOn: Build
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Package
+    displayName: 'Package'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Package'
+      inputs:
+        command: 'pack'
+        packagesToPack: 'itabank.SDK/itabank.SDK.csproj'
+        nobuild: false
+        versioningScheme: 'byPrereleaseNumber'
+        majorVersion: '1'
+        minorVersion: '0'
+        patchVersion: '0'
+    - task: DotNetCoreCLI@2
+      displayName: 'Push'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '286ad473-3155-4c2d-a692-00bc7c74bdbb/d45a0b00-2205-43e8-a33e-1acfec305dc1'

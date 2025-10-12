@@ -27,7 +27,8 @@ public class AccountRepo : IAccountRepo
         {
             var accountId = GetAccountId(collection);
 
-            existing = new Account {
+            existing = new Account
+            {
                 Id = accountId,
                 Number = GetAccountNumber(accountId)
             };
@@ -41,6 +42,15 @@ public class AccountRepo : IAccountRepo
 
         return existing;
     }
+    
+    public List<Account> Get()
+    {
+        using var context = new LiteDatabase(_settings.Name);
+
+        var collection = context.GetCollection<Account>();
+
+        return collection.FindAll().ToList();
+    }    
 
     public Account Get(int id)
     {
@@ -51,16 +61,7 @@ public class AccountRepo : IAccountRepo
         return collection.FindById(id);
     }
 
-    public List<Account> Get()
-    {
-        using var context = new LiteDatabase(_settings.Name);
-
-        var collection = context.GetCollection<Account>();
-
-        return collection.FindAll().ToList();
-    }
-
-    public Account GetByNumber(string number)
+    public Account Get(string number)
     {
         using var context = new LiteDatabase(_settings.Name);
 

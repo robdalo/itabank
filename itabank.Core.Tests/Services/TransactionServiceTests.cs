@@ -28,14 +28,16 @@ public class TransactionServiceTests
     [Test]
     public void Post()
     {
-        var accountNumberDebit = "000001";
-        var accountNumberCredit = "000002";
-        var value = 150;
+        var expected = new {
+            Payer = "000001",
+            Payee = "000002",
+            Value = 150
+        };
 
-        _transactionService.Post(accountNumberDebit, accountNumberCredit, value);
+        _transactionService.Post(expected.Payer, expected.Payee, expected.Value);
 
-        _accountRepo.Verify(x => x.GetByNumber(accountNumberDebit), Times.Once);
-        _accountRepo.Verify(x => x.GetByNumber(accountNumberCredit), Times.Once);
+        _accountRepo.Verify(x => x.Get(expected.Payer), Times.Once);
+        _accountRepo.Verify(x => x.Get(expected.Payee), Times.Once);
         _accountRepo.Verify(x => x.AddOrUpdate(It.IsAny<Account>()), Times.Exactly(2));
     }
 }

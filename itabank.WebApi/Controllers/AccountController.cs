@@ -79,8 +79,8 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Post transaction - {Serializer.Serialize(request)}");
 
         _transactionService.Post(
-            accountNumberDebit: request.PayerAccountNumber,
-            accountNumberCredit: request.PayeeAccountNumber,
+            payer: request.Payer,
+            payee: request.Payee,
             value: request.Value);
     }
 

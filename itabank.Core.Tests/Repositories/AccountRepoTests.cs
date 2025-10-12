@@ -78,6 +78,48 @@ public class AccountRepoTests
     [Test]
     public void Get()
     {
+        var expected = new[]
+        {
+            new
+            {
+                Id = 1,
+                Number = "000001",
+                Name = "Mr Ted Crilly",
+                Balance = 25
+            },
+            new
+            {
+                Id = 2,
+                Number = "000002",
+                Name = "Mr Fred Olsen",
+                Balance = 250
+            }
+        };
+
+        // add accounts
+
+        _accountRepo.AddOrUpdate(new()
+        {
+            Name = expected[0].Name,
+            Balance = expected[0].Balance
+        });
+
+        _accountRepo.AddOrUpdate(new()
+        {
+            Name = expected[1].Name,
+            Balance = expected[1].Balance
+        });
+
+        // get accounts
+
+        var accounts = _accountRepo.Get();
+
+        accounts.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void GetById()
+    {
         // add
 
         _accountRepo.AddOrUpdate(new()
@@ -109,7 +151,7 @@ public class AccountRepoTests
 
         // get
 
-        var account = _accountRepo.GetByNumber("000001");
+        var account = _accountRepo.Get("000001");
 
         account.Id.Should().Be(1);
         account.Number.Should().Be("000001");
@@ -128,11 +170,11 @@ public class AccountRepoTests
             Balance = 25
         });
 
-        _accountRepo.GetByNumber("000001").Should().NotBeNull();
+        _accountRepo.Get().Any().Should().BeTrue();
 
         // truncate
 
         _accountRepo.Truncate();
-        _accountRepo.GetByNumber("000001").Should().BeNull();
+        _accountRepo.Get().Any().Should().BeFalse();
     }    
 }

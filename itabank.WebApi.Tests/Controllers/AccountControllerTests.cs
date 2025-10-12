@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using AutoMapper;
 using FluentAssertions;
+using itabank.Core.Domain.Models;
 using itabank.Core.Services.Interfaces;
 using itabank.WebApi.Controllers;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,39 @@ public class AccountControllerTests
     }
 
     [Test]
+    public void AddOrUpdate()
+    {
+        _controller
+            .Invoking(x => x.AddOrUpdate(new() {
+                Name = "Mr Ted Crilly",
+                Balance = 25 }))
+            .Should()
+            .NotThrow();
+
+        _accountService.Verify(x => x.AddOrUpdate(It.IsAny<Account>()), Times.Once);
+    }
+
+    [Test]
+    public void Get()
+    {
+        _controller.Invoking(x => x.Get())
+                   .Should()
+                   .NotThrow();
+
+        _accountService.Verify(x => x.Get(), Times.Once);
+    }  
+
+    [Test]
+    public void GetById()
+    {
+        _controller.Invoking(x => x.Get(1))
+                   .Should()
+                   .NotThrow();
+
+        _accountService.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
     public void GetByNumber()
     {
         _controller.Invoking(x => x.Get("000001"))
@@ -46,4 +80,28 @@ public class AccountControllerTests
 
         _accountService.Verify(x => x.Get(It.IsAny<string>()), Times.Once);
     }
+
+    [Test]
+    public void Post()
+    {
+        _controller
+            .Invoking(x => x.Post(new() {
+                Payer = "000001",
+                Payee = "000002",
+                Value = 125 }))
+            .Should()
+            .NotThrow();
+
+        _transactionService.Verify(x => x.Post(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<decimal>()), Times.Once);
+    }
+    
+    [Test]
+    public void Truncate()
+    {
+        _controller.Invoking(x => x.Truncate())
+                   .Should()
+                   .NotThrow();
+
+        _accountService.Verify(x => x.Truncate(), Times.Once);
+    }    
 }
