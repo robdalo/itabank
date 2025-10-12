@@ -7,7 +7,7 @@ using NUnit.Framework.Internal;
 
 namespace itabank.SDK.Tests;
 
-// [Ignore("Integration")]
+[Ignore("Integration")]
 public class ApiConsumerTests
 {
     private IApiConsumer _apiConsumer;
