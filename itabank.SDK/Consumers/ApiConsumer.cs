@@ -20,10 +20,10 @@ public class ApiConsumer : IApiConsumer
         _restConsumer = new RestConsumer(_settings.BaseUrl);
     }
 
-    public async Task<Account> AddOrUpdateAccountAsync(AccountRequest request)
+    public async Task<Account> AddAccountAsync(AccountRequest request)
     {
         return await _restConsumer.PostAsync<Account>(
-            endpoint: ApiSettings.Endpoints["AddOrUpdateAccount"],
+            endpoint: ApiSettings.Endpoints["AddAccount"],
             authToken: AuthToken,
             payload: request);
     }
@@ -63,4 +63,12 @@ public class ApiConsumer : IApiConsumer
             endpoint: ApiSettings.Endpoints["TruncateAccounts"],
             authToken: AuthToken);
     }
+
+    public async Task<Account> UpdateAccountAsync(AccountRequest request)
+    {
+        return await _restConsumer.PostAsync<Account>(
+            endpoint: ApiSettings.Endpoints["UpdateAccount"],
+            authToken: AuthToken,
+            payload: request);
+    }    
 }

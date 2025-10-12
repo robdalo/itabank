@@ -32,12 +32,11 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("")]
-    public SDK.Models.Account AddOrUpdate(SDK.Requests.AccountRequest request)
+    public SDK.Models.Account Add(SDK.Requests.AccountRequest request)
     {
-        _logger.LogInformation($"Add or update account - {Serializer.Serialize(request)}");
+        _logger.LogInformation($"Add account - {Serializer.Serialize(request)}");
 
         var account = _accountService.AddOrUpdate(new() {
-            Number = request.Number,
             Name = request.Name,
             Balance = request.Balance
         });
@@ -91,5 +90,20 @@ public class AccountController : ControllerBase
         _logger.LogInformation($"Truncate database");
 
         _accountService.Truncate();
+    }
+
+    [HttpPut]
+    [Route("")]
+    public SDK.Models.Account Update(SDK.Requests.AccountRequest request)
+    {
+        _logger.LogInformation($"Update account - {Serializer.Serialize(request)}");
+
+        var account = _accountService.AddOrUpdate(new() {
+            Number = request.Number,
+            Name = request.Name,
+            Balance = request.Balance
+        });
+
+        return _mapper.Map<SDK.Models.Account>(account);
     }
 }

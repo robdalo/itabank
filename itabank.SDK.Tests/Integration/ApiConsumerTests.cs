@@ -7,7 +7,7 @@ using NUnit.Framework.Internal;
 
 namespace itabank.SDK.Tests;
 
-[Ignore("Integration")]
+// [Ignore("Integration")]
 public class ApiConsumerTests
 {
     private IApiConsumer _apiConsumer;
@@ -28,7 +28,7 @@ public class ApiConsumerTests
     }
 
     [Test]
-    public async Task AddOrUpdateAsync()
+    public async Task AddAccountAsync()
     {
         // add account
 
@@ -39,7 +39,7 @@ public class ApiConsumerTests
             Balance = (decimal)(0)
         };
 
-        var account = await _apiConsumer.AddOrUpdateAccountAsync(new()
+        var account = await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected.Name
         });
@@ -47,25 +47,6 @@ public class ApiConsumerTests
         account.Number.Should().Be(expected.Number);
         account.Name.Should().Be(expected.Name);
         account.Balance.Should().Be(expected.Balance);
-
-        // update account
-
-        account.Balance = 25;
-
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
-        {
-            Name = expected.Name,
-            Number = expected.Number,
-            Balance = 25
-        });
-
-        // get account
-
-        account = await _apiConsumer.GetAccountAsync(account.Number);
-
-        account.Number.Should().Be(expected.Number);
-        account.Name.Should().Be(expected.Name);
-        account.Balance.Should().Be(25);
     }
 
     [Test]
@@ -88,13 +69,13 @@ public class ApiConsumerTests
             }
         };
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected[0].Name,
             Balance = expected[0].Balance
         });
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected[1].Name,
             Balance = expected[1].Balance
@@ -119,7 +100,7 @@ public class ApiConsumerTests
             Balance = (decimal)(0)
         };
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected.Name
         });
@@ -144,7 +125,7 @@ public class ApiConsumerTests
             Balance = (decimal)(0)
         };
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected.Name
         });
@@ -177,13 +158,13 @@ public class ApiConsumerTests
             Balance = (decimal)(0)
         };
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = payerAccount.Name,
             Balance = payerAccount.Balance
         });
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = payeeAccount.Name,
             Balance = payeeAccount.Balance
@@ -226,19 +207,20 @@ public class ApiConsumerTests
         account.Name.Should().Be(payeeAccount.Name);
         account.Balance.Should().Be(50);
     }
-    
+
     public async Task TruncateAsync()
     {
         // add account
 
-        var expected = new {
+        var expected = new
+        {
             Id = 1,
             Number = "000001",
             Name = "Mr Ted Crilly",
             Balance = (decimal)(0)
         };
 
-        await _apiConsumer.AddOrUpdateAccountAsync(new()
+        await _apiConsumer.AddAccountAsync(new()
         {
             Name = expected.Name
         });
@@ -257,6 +239,47 @@ public class ApiConsumerTests
 
         accounts.Any().Should().BeFalse();
     }
+    
+    [Test]
+    public async Task UpdateAccountAsync()
+    {
+        // add account
+
+        var expected = new
+        {
+            Number = "000001",
+            Name = "Mr Ted Crilly",
+            Balance = (decimal)(0)
+        };
+
+        var account = await _apiConsumer.AddAccountAsync(new()
+        {
+            Name = expected.Name
+        });
+
+        account.Number.Should().Be(expected.Number);
+        account.Name.Should().Be(expected.Name);
+        account.Balance.Should().Be(expected.Balance);
+
+        // update account
+
+        account.Balance = 25;
+
+        await _apiConsumer.AddAccountAsync(new()
+        {
+            Name = expected.Name,
+            Number = expected.Number,
+            Balance = 25
+        });
+
+        // get account
+
+        account = await _apiConsumer.GetAccountAsync(account.Number);
+
+        account.Number.Should().Be(expected.Number);
+        account.Name.Should().Be(expected.Name);
+        account.Balance.Should().Be(25);
+    }    
 
     private IServiceProvider GetServiceProvider()
     {

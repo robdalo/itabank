@@ -36,43 +36,57 @@ public class AccountRepoTests
     [Test]
     public void AddOrUpdate()
     {
+        var expected = new[] {
+            new {
+                Id = 1,
+                Number = "000001",
+                Name = "Mr Ted Crilly",
+                Balance = 25,
+            },
+            new
+            {
+                Id = 1,
+                Number = "000001",
+                Name = "Mr Jack Hackett",
+                Balance = 125
+            },
+            new
+            {
+                Id = 2,
+                Number = "000002",
+                Name = "Mr Larry Duff",
+                Balance = 50
+            }
+        };
+
         // add
 
         var account = _accountRepo.AddOrUpdate(new()
         {
-            Name = "Mr Ted Crilly",
-            Balance = 25
+            Name = expected[0].Name,
+            Balance = expected[0].Balance
         });
 
-        account.Id.Should().Be(1);
-        account.Number.Should().Be("000001");
-        account.Name.Should().Be("Mr Ted Crilly");
-        account.Balance.Should().Be(25);
+        account.Should().BeEquivalentTo(expected[0]);
 
         // update
 
-        account.Name = "Mr Jack Hackett";
-        account.Balance += 100;
-
+        account.Name = expected[1].Name;
+        account.Balance = expected[1].Balance;
+        
         account = _accountRepo.AddOrUpdate(account);
 
-        account.Id.Should().Be(1);
-        account.Number.Should().Be("000001");
-        account.Name.Should().Be("Mr Jack Hackett");
-        account.Balance.Should().Be(125);
+        account.Should().BeEquivalentTo(expected[1]);
 
         // add
 
         account = _accountRepo.AddOrUpdate(new()
         {
-            Name = "Mr Larry Duff",
-            Balance = 50
+            Name = expected[2].Name,
+            Balance = expected[2].Balance
         });
 
-        account.Id.Should().Be(2);
-        account.Number.Should().Be("000002");
-        account.Name.Should().Be("Mr Larry Duff");
-        account.Balance.Should().Be(50);
+        account.Should().BeEquivalentTo(expected[2]);
     }
 
     [Test]
@@ -120,43 +134,53 @@ public class AccountRepoTests
     [Test]
     public void GetById()
     {
+        var expected = new
+        {
+            Id = 1,
+            Number = "000001",
+            Name = "Mr Ted Crilly",
+            Balance = 25
+        };
+
         // add
 
         _accountRepo.AddOrUpdate(new()
         {
-            Name = "Mr Ted Crilly",
-            Balance = 25
+            Name = expected.Name,
+            Balance = expected.Balance
         });
 
         // get
 
-        var account = _accountRepo.Get(1);
+        var account = _accountRepo.Get(expected.Id);
 
-        account.Id.Should().Be(1);
-        account.Number.Should().Be("000001");
-        account.Name.Should().Be("Mr Ted Crilly");
-        account.Balance.Should().Be(25);
+        account.Should().BeEquivalentTo(expected);
     }
 
     [Test]
     public void GetByNumber()
     {
+        var expected = new
+        {
+            Id = 1,
+            Number = "000001",
+            Name = "Mr Ted Crilly",
+            Balance = 25
+        };
+
         // add
 
         _accountRepo.AddOrUpdate(new()
         {
-            Name = "Mr Ted Crilly",
-            Balance = 25
+            Name = expected.Name,
+            Balance = expected.Balance
         });
 
         // get
 
-        var account = _accountRepo.Get("000001");
+        var account = _accountRepo.Get(expected.Number);
 
-        account.Id.Should().Be(1);
-        account.Number.Should().Be("000001");
-        account.Name.Should().Be("Mr Ted Crilly");
-        account.Balance.Should().Be(25);
+        account.Should().BeEquivalentTo(expected);
     }
 
     [Test]

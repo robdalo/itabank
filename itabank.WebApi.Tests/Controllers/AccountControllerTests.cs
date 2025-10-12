@@ -39,10 +39,10 @@ public class AccountControllerTests
     }
 
     [Test]
-    public void AddOrUpdate()
+    public void Add()
     {
         _controller
-            .Invoking(x => x.AddOrUpdate(new() {
+            .Invoking(x => x.Add(new() {
                 Name = "Mr Ted Crilly",
                 Balance = 25 }))
             .Should()
@@ -94,7 +94,7 @@ public class AccountControllerTests
 
         _transactionService.Verify(x => x.Post(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<decimal>()), Times.Once);
     }
-    
+
     [Test]
     public void Truncate()
     {
@@ -103,5 +103,19 @@ public class AccountControllerTests
                    .NotThrow();
 
         _accountService.Verify(x => x.Truncate(), Times.Once);
-    }    
+    }
+    
+    [Test]
+    public void Update()
+    {
+        _controller
+            .Invoking(x => x.Add(new() {
+                Number = "000001",
+                Name = "Mr Ted Crilly",
+                Balance = 25 }))
+            .Should()
+            .NotThrow();
+
+        _accountService.Verify(x => x.AddOrUpdate(It.IsAny<Account>()), Times.Once);
+    }
 }
