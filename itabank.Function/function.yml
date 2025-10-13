@@ -95,9 +95,9 @@ stages:
               downloadPath: '$(System.ArtifactsDirectory)'
           - task: AzureFunctionApp@2
             inputs:
-              connectedServiceNameARM: 'itabank-service-connection'
+              connectedServiceNameARM: '$(azureSubscription)'
               appType: 'functionAppLinux'
-              appName: 'itabank-dev-update-account'
-              package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              appName: '$(appServiceName)'
+              package: '$(System.ArtifactsDirectory)/function/**/*.zip'
               runtimeStack: 'DOTNET-ISOLATED|9.0'
               deploymentMethod: 'auto'
