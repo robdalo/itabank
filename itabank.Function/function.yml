@@ -14,7 +14,7 @@ trigger:
 
 variables:
   azureSubscription: 'itabank-service-connection'
-  appServiceName: 'itabank-dev-webapi'
+  appServiceName: 'itabank-dev-update-account'
   buildConfiguration: 'Release'
 
 stages:
@@ -32,3 +32,72 @@ stages:
         command: 'build'
         projects: 'itabank.Function/itabank.Function.csproj'
         arguments: '--configuration $(buildConfiguration)'
+
+- stage: Test
+  displayName: 'Test'
+  dependsOn: Build
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Test
+    displayName: 'Test'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Test - itabank.SDK'
+      inputs:
+        command: 'test'
+        projects: 'itabank.SDK.Tests/itabank.SDK.Tests.csproj'
+
+- stage: Publish
+  displayName: 'Publish'
+  dependsOn: Test
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - job: Publish
+    displayName: 'Publish'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: 'publish'
+        projects: 'itabank.Function/itabank.Function.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        publishWebProjects: false
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'function'
+
+- stage: Deploy
+  displayName: 'Deploy'
+  dependsOn: Publish
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+  - deployment: DeployToAzure
+    displayName: 'Deploy'
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'function'
+              downloadPath: '$(System.ArtifactsDirectory)'
+          - task: AzureFunctionApp@2
+            inputs:
+              connectedServiceNameARM: 'itabank-service-connection'
+              appType: 'functionAppLinux'
+              appName: 'itabank-dev-update-account'
+              package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              runtimeStack: 'DOTNET-ISOLATED|9.0'
+              deploymentMethod: 'auto'
