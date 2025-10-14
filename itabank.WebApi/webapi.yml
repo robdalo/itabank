@@ -80,5 +80,5 @@ stages:
               azureSubscription: '$(subscription)'
               appName: '$(appService)'
               appType: '$(appType)'
-              package: '$(Pipeline.Workspace)/$(pipelineArtifact)/*.zip'
               deploymentMethod: 'auto'
+              package: '$(Pipeline.Workspace)/$(pipelineArtifact)/*.zip'
