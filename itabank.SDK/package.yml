@@ -8,53 +8,72 @@ trigger:
     - itabank.SDK.Tests/*
     - itabank.Shared/*
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  majorVersion: 1
+  minorVersion: 0
+  patchVersion: 0
+  buildConfiguration: 'Release'
+  packageFeedIdentifier: '286ad473-3155-4c2d-a692-00bc7c74bdbb/d45a0b00-2205-43e8-a33e-1acfec305dc1'
+  pipelineArtifact: 'artifact'
+  projectName: 'itabank.SDK'
 
 stages:
 - stage: Build
-  displayName: 'Build & Test'
+  displayName: 'Build'
   pool:
     vmImage: ubuntu-latest
   jobs:
-  - job: BuildAndTest
-    displayName: 'Build & Test'
+  - job: Build
+    displayName: 'Build'
     steps:
     - task: DotNetCoreCLI@2
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: 'itabank.SDK/itabank.SDK.csproj'
+        projects: '$(projectName)/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
     - task: DotNetCoreCLI@2
       displayName: 'Test'
       inputs:
         command: 'test'
-        projects: 'itabank.SDK.Tests/itabank.SDK.Tests.csproj'
+        projects: '$(projectName).Tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(projectName)/*.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        nobuild: true
+        versioningScheme: 'byPrereleaseNumber'
+        majorVersion: '$(majorVersion)'
+        minorVersion: '$(minorVersion)'
+        patchVersion: '$(patchVersion)'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: '$(pipelineArtifact)'
 
-- stage: Package
-  displayName: 'Package'
+- stage: Publish
+  displayName: 'Publish'
   dependsOn: Build
   condition: succeeded()
   pool:
     vmImage: ubuntu-latest
   jobs:
-  - job: Package
-    displayName: 'Package'
+  - job: Publish
+    displayName: 'Publish'
     steps:
-    - task: DotNetCoreCLI@2
-      displayName: 'Package'
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download'
       inputs:
-        command: 'pack'
-        packagesToPack: 'itabank.SDK/itabank.SDK.csproj'
-        nobuild: false
-        versioningScheme: 'byPrereleaseNumber'
-        majorVersion: '1'
-        minorVersion: '0'
-        patchVersion: '0'
+        artifact: '$(pipelineArtifact)'
+        path: '$(Pipeline.Workspace)/$(pipelineArtifact)'
     - task: DotNetCoreCLI@2
       displayName: 'Push'
       inputs:
         command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+        packagesToPush: '$(Pipeline.Workspace)/$(pipelineArtifact)/*.nupkg'
         nuGetFeedType: 'internal'
-        publishVstsFeed: '286ad473-3155-4c2d-a692-00bc7c74bdbb/d45a0b00-2205-43e8-a33e-1acfec305dc1'
+        publishVstsFeed: '$(packageFeedIdentifier)'

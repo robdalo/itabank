@@ -14,47 +14,51 @@ trigger:
     - itabank.WebApi/webapi.arm.*
 
 variables:
-  azureSubscription: 'itabank-service-connection'
-  appServiceName: 'itabank-dev-webapi'
+  appService: 'itabank-dev-webapi'
+  appType: 'webApp'
   buildConfiguration: 'Release'
+  pipelineArtifact: 'artifact'
+  projectName: 'itabank.WebApi'
+  subscription: 'itabank-service-connection'
+  testProjectName: 'itabank.Core'
 
 stages:
 - stage: Build
-  displayName: 'Build & Test'
+  displayName: 'Build'
   pool:
     vmImage: ubuntu-latest
   jobs:
-  - job: BuildAndTest
-    displayName: 'Build & Test'
+  - job: Build
+    displayName: 'Build'
     steps:
     - task: DotNetCoreCLI@2
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: 'itabank.WebApi/itabank.WebApi.csproj'
+        projects: '$(projectName)/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
     - task: DotNetCoreCLI@2
-      displayName: 'Test - itabank.Core'
+      displayName: 'Test - $(testProjectName)'
       inputs:
         command: 'test'
-        projects: 'itabank.Core.Tests/itabank.Core.Tests.csproj'
+        projects: '$(testProjectName).Tests/*.csproj'
     - task: DotNetCoreCLI@2
-      displayName: 'Test - itabank.WebApi'
+      displayName: 'Test - $(projectName)'
       inputs:
         command: 'test'
-        projects: 'itabank.WebApi.Tests/itabank.WebApi.Tests.csproj'
+        projects: '$(projectName).Tests/*.csproj'
     - task: DotNetCoreCLI@2
-      displayName: 'Publish'
+      displayName: 'Publish Project'
       inputs:
         command: 'publish'
-        projects: 'itabank.WebApi/itabank.WebApi.csproj'
+        projects: '$(projectName)/*.csproj'
         arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
         publishWebProjects: false
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifacts'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact'
       inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'webapi'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: '$(pipelineArtifact)'
 
 - stage: Deploy
   displayName: 'Deploy'
@@ -70,18 +74,16 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadBuildArtifacts@1
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download'
             inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'webapi'
-              downloadPath: '$(System.ArtifactsDirectory)'
+              artifact: '$(pipelineArtifact)'
+              path: '$(Pipeline.Workspace)/$(pipelineArtifact)'
           - task: AzureWebApp@1
             displayName: 'Deploy'
             inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: 'webApp'
-              appName: '$(appServiceName)'
-              package: '$(System.ArtifactsDirectory)/webapi/**/*.zip'
+              azureSubscription: '$(subscription)'
+              appName: '$(appService)'
+              appType: '$(appType)'
+              package: '$(Pipeline.Workspace)/$(pipelineArtifact)/*.zip'
               deploymentMethod: 'auto'

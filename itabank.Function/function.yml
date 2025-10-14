@@ -13,9 +13,14 @@ trigger:
     - itabank.Function/function.arm.*
 
 variables:
-  azureSubscription: 'itabank-service-connection'
-  appServiceName: 'itabank-dev-update-account'
+  appService: 'itabank-dev-update-account'
+  appType: 'functionAppLinux'
   buildConfiguration: 'Release'
+  pipelineArtifact: 'artifact'
+  projectName: 'itabank.Function'
+  runtime: 'DOTNET-ISOLATED|9.0'
+  subscription: 'itabank-service-connection'
+  testProjectName: 'itabank.SDK'
 
 stages:
 - stage: Build
@@ -30,51 +35,29 @@ stages:
       displayName: 'Build'
       inputs:
         command: 'build'
-        projects: 'itabank.Function/itabank.Function.csproj'
+        projects: '$(projectName)/*.csproj'
         arguments: '--configuration $(buildConfiguration)'
-
-- stage: Test
-  displayName: 'Test'
-  dependsOn: Build
-  condition: succeeded()
-  pool:
-    vmImage: ubuntu-latest
-  jobs:
-  - job: Test
-    displayName: 'Test'
-    steps:
     - task: DotNetCoreCLI@2
-      displayName: 'Test - itabank.SDK'
+      displayName: 'Test - $(testProjectName)'
       inputs:
         command: 'test'
-        projects: 'itabank.SDK.Tests/itabank.SDK.Tests.csproj'
-
-- stage: Publish
-  displayName: 'Publish'
-  dependsOn: Test
-  condition: succeeded()
-  pool:
-    vmImage: ubuntu-latest
-  jobs:
-  - job: Publish
-    displayName: 'Publish'
-    steps:
+        projects: '$(testProjectName).Tests/*.csproj'        
     - task: DotNetCoreCLI@2
-      displayName: 'Publish'
+      displayName: 'Publish Project'
       inputs:
         command: 'publish'
-        projects: 'itabank.Function/itabank.Function.csproj'
+        projects: '$(projectName)/*.csproj'
         arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
         publishWebProjects: false
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifacts'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact'
       inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'function'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: '$(pipelineArtifact)'
 
 - stage: Deploy
   displayName: 'Deploy'
-  dependsOn: Publish
+  dependsOn: Build
   condition: succeeded()
   pool:
     vmImage: ubuntu-latest
@@ -86,17 +69,16 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadBuildArtifacts@1
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download'
             inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'function'
-              downloadPath: '$(System.ArtifactsDirectory)'
+              artifact: '$(pipelineArtifact)'
+              path: '$(Pipeline.Workspace)/$(pipelineArtifact)'
           - task: AzureFunctionApp@2
+            displayName: 'Deploy'
             inputs:
-              connectedServiceNameARM: '$(azureSubscription)'
-              appType: 'functionAppLinux'
-              appName: '$(appServiceName)'
-              package: '$(System.ArtifactsDirectory)/function/**/*.zip'
-              runtimeStack: 'DOTNET-ISOLATED|9.0'
+              appName: '$(appService)'
+              appType: '$(appType)'
+              connectedServiceNameARM: '$(subscription)'
+              package: '$(Pipeline.Workspace)/$(pipelineArtifact)/*.zip'
+              runtimeStack: '$(runtime)'

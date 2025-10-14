@@ -6,47 +6,66 @@ trigger:
     include:
     - itabank.WebApi/webapi.arm.*
 
+variables:
+  armTemplate: 'webapi.arm.json'
+  location: 'UK South'
+  pipelineArtifact: 'artifact'
+  projectName: 'itabank.WebApi'
+  resourceGroup: 'itabank-dev-services'
+  serviceConnection: 'itabank-service-connection'
+  subscription: '47e3a40f-35ad-4332-b501-a4036f561613'
+
 stages:
-- stage: Validation
-  displayName: 'Validation'
+- stage: Validate
+  displayName: 'Validate'
   pool:
     vmImage: ubuntu-latest
   jobs:
-  - job: Validation
-    displayName: 'Validation'
+  - job: Validate
+    displayName: 'Validate'
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Validate ARM template'
+      displayName: 'Validate'
       inputs:
         deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'itabank-service-connection'
-        subscriptionId: '47e3a40f-35ad-4332-b501-a4036f561613'
+        azureResourceManagerConnection: '$(serviceConnection)'
+        subscriptionId: '$(subscription)'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'itabank-dev-services'
-        location: 'UK South'
+        resourceGroupName: '$(resourceGroup)'
+        location: '$(location)'
         templateLocation: 'Linked artifact'
-        csmFile: '$(Build.SourcesDirectory)/itabank.WebApi/webapi.arm.json'
+        csmFile: '$(Build.SourcesDirectory)/$(projectName)/$(armTemplate)'
         deploymentMode: 'Validation'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/$(projectName)/$(armTemplate)'
+        artifact: '$(pipelineArtifact)'
 
-- stage: Deployment
-  displayName: 'Deployment'
-  dependsOn: Validation
+- stage: Deploy
+  displayName: 'Deploy'
+  dependsOn: Validate
   condition: succeeded()
   pool:
     vmImage: ubuntu-latest
   jobs:
-  - job: Deployment
-    displayName: 'Deployment'
+  - job: Deploy
+    displayName: 'Deploy'
     steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download'
+      inputs:
+        artifact: '$(pipelineArtifact)'
+        path: '$(Pipeline.Workspace)/$(pipelineArtifact)'
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy ARM template'
+      displayName: 'Deploy'
       inputs:
         deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'itabank-service-connection'
-        subscriptionId: '47e3a40f-35ad-4332-b501-a4036f561613'
+        azureResourceManagerConnection: '$(serviceConnection)'
+        subscriptionId: '$(subscription)'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'itabank-dev-services'
-        location: 'UK South'
+        resourceGroupName: '$(resourceGroup)'
+        location: '$(location)'
         templateLocation: 'Linked artifact'
-        csmFile: '$(Build.SourcesDirectory)/itabank.WebApi/webapi.arm.json'
+        csmFile: '$(Pipeline.Workspace)/$(pipelineArtifact)/$(armTemplate)'
         deploymentMode: 'Incremental'

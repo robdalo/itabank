@@ -181,6 +181,20 @@
         {
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_itabank_dev_update_account_name'), '/appsettings')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_itabank_dev_update_account_name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_itabankdevupdateaccount_name'))]"
+            ],
+            "properties": {
+                "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccounts_itabankdevupdateaccount_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_itabankdevupdateaccount_name')), '2025-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "DEPLOYMENT_STORAGE_CONNECTION_STRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccounts_itabankdevupdateaccount_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_itabankdevupdateaccount_name')), '2025-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "UpdateAccountTimerSchedule": "0 */1 * * * *"
+            }
+        },        
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-11-01",
             "name": "[concat(parameters('sites_itabank_dev_update_account_name'), '/web')]",
             "location": "UK South",
             "dependsOn": [
